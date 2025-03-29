@@ -12,6 +12,12 @@ class MainActivityViewModel: ViewModel() {
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> = _categories
 
+    private val _mealsList = MutableStateFlow<List<Meal>>(emptyList())
+    val mealsList: StateFlow<List<Meal>> = _mealsList
+
+    private val _errorMsg = MutableStateFlow<String?>(null)
+    val errorMsg: StateFlow<String?> = _errorMsg
+
     fun fetchCategories() {
         viewModelScope.launch {
             try {
@@ -20,6 +26,44 @@ class MainActivityViewModel: ViewModel() {
                 println("LOGGING: Fetched categories: ${response.categories}")
             } catch (e: Exception) {
                 println("LOGGING: FAILED TO FETCH CATEGORIES - ${e.message}")
+            }
+        }
+    }
+
+    fun searchMeals(query: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getMealsBySearch(query)
+                if (response.meals.isNullOrEmpty()) {
+                    _mealsList.value = emptyList()
+                    _errorMsg.value = "No meals found for \"$query\""
+                } else {
+                    _mealsList.value = response.meals
+                    _errorMsg.value = null
+                }
+            } catch (e: Exception) {
+                _mealsList.value = emptyList()
+                _errorMsg.value = "Failed to fetch data by search: ${e.message}"
+                println("LOGGING: FAILED TO FETCH DATA BY SEARCH")
+            }
+        }
+    }
+
+    fun searchMealsByFirstLetter(query: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getMealsByFirstLetter(query)
+                if (response.meals.isNullOrEmpty()) {
+                    _mealsList.value = emptyList()
+                    _errorMsg.value = "No meals found for \"$query\""
+                } else {
+                    _mealsList.value = response.meals
+                    _errorMsg.value = null
+                }
+            } catch (e: Exception) {
+                _mealsList.value = emptyList()
+                _errorMsg.value = "Failed to fetch data by search: ${e.message}"
+                println("LOGGING: FAILED TO FETCH DATA BY SEARCHING FIRST LETTER")
             }
         }
     }
