@@ -10,20 +10,16 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
 interface APIService {
-    @GET("categories.php")
-    suspend fun getCategories() : CategoriesResponse
-
     @GET("search.php")
     suspend fun getMealsBySearch(@Query("s") query: String): MealsResponse
 
     @GET("search.php")
     suspend fun getMealsByFirstLetter(@Query("f") letter: String): MealsResponse
 
-    @GET("lookup.php")
-    suspend fun getMealByID(@Query("i") mealId: String): MealsResponse
-
     companion object {
         private const val BASE_URL = "https://www.themealdb.com/api/json/v1/1/"
+        // testing API failure
+        // private const val BASE_URL = "https://www.themealdb.com/api/json/v1/2/"
         private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
         private val okHttpClient = OkHttpClient.Builder()
