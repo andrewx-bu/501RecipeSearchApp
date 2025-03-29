@@ -57,7 +57,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.2")

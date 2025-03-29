@@ -20,7 +20,7 @@ interface APIService {
     suspend fun getMealsByFirstLetter(@Query("f") letter: String): MealsResponse
 
     @GET("lookup.php")
-    suspend fun getMealDetails(@Query("i") mealId: String): MealsResponse
+    suspend fun getMealByID(@Query("i") mealId: String): MealsResponse
 
     companion object {
         private const val BASE_URL = "https://www.themealdb.com/api/json/v1/1/"

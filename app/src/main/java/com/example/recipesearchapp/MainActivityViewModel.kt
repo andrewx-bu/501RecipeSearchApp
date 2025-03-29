@@ -9,8 +9,13 @@ import kotlinx.coroutines.launch
 class MainActivityViewModel: ViewModel() {
     private val apiService = APIService.create()
 
-    private val _categories = MutableStateFlow<List<Category>>(emptyList())
-    val categories: StateFlow<List<Category>> = _categories
+    fun clearSearchResults() {
+        _mealsList.value = emptyList()
+        _errorMsg.value = null
+    }
+
+    private val _categoriesList = MutableStateFlow<List<Category>>(emptyList())
+    val categoriesList: StateFlow<List<Category>> = _categoriesList
 
     private val _mealsList = MutableStateFlow<List<Meal>>(emptyList())
     val mealsList: StateFlow<List<Meal>> = _mealsList
@@ -22,9 +27,15 @@ class MainActivityViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 val response = apiService.getCategories()
-                _categories.value = response.categories
-                println("LOGGING: Fetched categories: ${response.categories}")
+                if (response.categories.isEmpty()) {
+                    _categoriesList.value = emptyList()
+                    _errorMsg.value = "No categories found."
+                } else {
+                    _categoriesList.value = response.categories
+                    _errorMsg.value = null
+                }
             } catch (e: Exception) {
+                _errorMsg.value = "Failed to fetch categories: ${e.message}"
                 println("LOGGING: FAILED TO FETCH CATEGORIES - ${e.message}")
             }
         }
@@ -36,7 +47,7 @@ class MainActivityViewModel: ViewModel() {
                 val response = apiService.getMealsBySearch(query)
                 if (response.meals.isNullOrEmpty()) {
                     _mealsList.value = emptyList()
-                    _errorMsg.value = "No meals found for \"$query\""
+                    _errorMsg.value = "No meals found for \"$query\"."
                 } else {
                     _mealsList.value = response.meals
                     _errorMsg.value = null
@@ -44,7 +55,7 @@ class MainActivityViewModel: ViewModel() {
             } catch (e: Exception) {
                 _mealsList.value = emptyList()
                 _errorMsg.value = "Failed to fetch data by search: ${e.message}"
-                println("LOGGING: FAILED TO FETCH DATA BY SEARCH")
+                println("LOGGING: FAILED TO FETCH DATA BY SEARCH - ${e.message}")
             }
         }
     }
@@ -55,7 +66,7 @@ class MainActivityViewModel: ViewModel() {
                 val response = apiService.getMealsByFirstLetter(query)
                 if (response.meals.isNullOrEmpty()) {
                     _mealsList.value = emptyList()
-                    _errorMsg.value = "No meals found for \"$query\""
+                    _errorMsg.value = "No meals found for \"$query\"."
                 } else {
                     _mealsList.value = response.meals
                     _errorMsg.value = null
@@ -63,7 +74,7 @@ class MainActivityViewModel: ViewModel() {
             } catch (e: Exception) {
                 _mealsList.value = emptyList()
                 _errorMsg.value = "Failed to fetch data by search: ${e.message}"
-                println("LOGGING: FAILED TO FETCH DATA BY SEARCHING FIRST LETTER")
+                println("LOGGING: FAILED TO FETCH DATA BY SEARCHING FIRST LETTER -  ${e.message}")
             }
         }
     }
